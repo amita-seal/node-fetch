@@ -1,6 +1,7 @@
 import * as stream from 'node:stream';
 import chai from 'chai';
-import {Response, Blob} from '../src/index.js';
+import Blob from 'fetch-blob';
+import {Response} from '../src/index.js';
 import TestServer from './utils/server.js';
 
 const {expect} = chai;
@@ -75,21 +76,6 @@ describe('Response', () => {
 			}
 		});
 		expect(res.headers.get('a')).to.equal('1');
-	});
-
-	it('should decode responses containing BOM to json', async () => {
-		const json = await new Response('\uFEFF{"a":1}').json();
-		expect(json.a).to.equal(1);
-	});
-
-	it('should decode responses containing BOM to text', async () => {
-		const text = await new Response('\uFEFF{"a":1}').text();
-		expect(text).to.equal('{"a":1}');
-	});
-
-	it('should keep BOM when getting raw bytes', async () => {
-		const ab = await new Response('\uFEFF{"a":1}').arrayBuffer();
-		expect(ab.byteLength).to.equal(10);
 	});
 
 	it('should support text() method', () => {

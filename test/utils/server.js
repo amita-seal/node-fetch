@@ -1,7 +1,7 @@
 import http from 'node:http';
 import zlib from 'node:zlib';
 import {once} from 'node:events';
-import busboy from 'busboy';
+import Busboy from 'busboy';
 
 export default class TestServer {
 	constructor(hostname) {
@@ -177,13 +177,6 @@ export default class TestServer {
 
 				res.end(buffer);
 			});
-		}
-
-		if (p === '/empty/deflate') {
-			res.statusCode = 200;
-			res.setHeader('Content-Type', 'text/plain');
-			res.setHeader('Content-Encoding', 'deflate');
-			res.end();
 		}
 
 		if (p === '/sdch') {
@@ -465,20 +458,21 @@ export default class TestServer {
 		}
 
 		if (p === '/multipart') {
-			let body = '';
 			res.statusCode = 200;
 			res.setHeader('Content-Type', 'application/json');
-			const bb = busboy({headers: request.headers});
-			bb.on('file', async (fieldName, file, info) => {
-				body += `${fieldName}=${info.filename}`;
+			const busboy = new Busboy({headers: request.headers});
+			let body = '';
+			busboy.on('file', async (fieldName, file, fileName) => {
+				body += `${fieldName}=${fileName}`;
 				// consume file data
 				// eslint-disable-next-line no-empty, no-unused-vars
 				for await (const c of file) {}
 			});
-			bb.on('field', (fieldName, value) => {
+
+			busboy.on('field', (fieldName, value) => {
 				body += `${fieldName}=${value}`;
 			});
-			bb.on('close', () => {
+			busboy.on('finish', () => {
 				res.end(JSON.stringify({
 					method: request.method,
 					url: request.url,
@@ -486,7 +480,7 @@ export default class TestServer {
 					body
 				}));
 			});
-			request.pipe(bb);
+			request.pipe(busboy);
 		}
 
 		if (p === '/m%C3%B6bius') {

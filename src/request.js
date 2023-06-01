@@ -57,15 +57,13 @@ export default class Request extends Body {
 		}
 
 		if (parsedURL.username !== '' || parsedURL.password !== '') {
-			throw new TypeError(`${parsedURL} is an url with embedded credentials.`);
+			throw new TypeError(`${parsedURL} is an url with embedded credentails.`);
 		}
 
 		let method = init.method || input.method || 'GET';
-		if (/^(delete|get|head|options|post|put)$/i.test(method)) {
-			method = method.toUpperCase();
-		}
+		method = method.toUpperCase();
 
-		if (!isRequest(init) && 'data' in init) {
+		if ('data' in init) {
 			doBadDataWarn();
 		}
 
@@ -280,7 +278,7 @@ export const getNodeRequestOptions = request => {
 
 	// HTTP-network-or-cache fetch step 2.15
 	if (request.compress && !headers.has('Accept-Encoding')) {
-		headers.set('Accept-Encoding', 'gzip, deflate, br');
+		headers.set('Accept-Encoding', 'gzip,deflate,br');
 	}
 
 	let {agent} = request;

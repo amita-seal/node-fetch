@@ -7,7 +7,6 @@ import * as _fetch from '.';
 
 async function run() {
 	const getResponse = await fetch('https://bigfile.com/test.zip');
-	await fetch(new URL('https://bigfile.com/test.zip'));
 	expectType<boolean>(getResponse.ok);
 	expectType<number>(getResponse.size);
 	expectType<number>(getResponse.status);
@@ -37,7 +36,6 @@ async function run() {
 	// Post
 	try {
 		const request = new Request('http://byjka.com/buka');
-		new Request(new URL('http://byjka.com/buka'));
 		expectType<string>(request.url);
 		expectType<Headers>(request.headers);
 
@@ -80,8 +78,6 @@ async function run() {
 	expectAssignable<Body>(request);
 
 	/* eslint-disable no-new */
-	new Request('url', {agent: false});
-
 	new Headers({Header: 'value'});
 	// new Headers(['header', 'value']); // should not work
 	new Headers([['header', 'value']]);
@@ -95,11 +91,6 @@ async function run() {
 
 	expectType<Response>(Response.redirect('https://google.com'));
 	expectType<Response>(Response.redirect('https://google.com', 301));
-
-	expectType<Response>(Response.json({foo: 'bar'}));
-	expectType<Response>(Response.json({foo: 'bar'}, {
-		status: 301
-	}));
 }
 
 run().finally(() => {
